@@ -77,7 +77,7 @@ int main() {
 	int countOperationsUndo = 0;
 	int countEdits = 0;
 	int totalEditsLength = START_AMOUNT_OPTIONS;
-	Liver* deletedLivers = (Liver*)malloc(sizeof(Liver) * START_AMOUNT_OPTIONS);
+	LiverNode* deletedLivers = (LiverNode*)malloc(sizeof(LiverNode) * START_AMOUNT_OPTIONS);
 	if (deletedLivers == NULL) {
 		DeleteLiverList(&head);
 		free(laterActions);
@@ -116,7 +116,7 @@ int main() {
 							free(laterActions);
 							free(addedID);
 							FreeEditReminders(&editReminders, countEdits);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							free(deletedLivers);
 							return 1;
 						}
 						if (status == INCORRECT_DATA) {
@@ -139,7 +139,12 @@ int main() {
 							free(laterActions);
 							free(addedID);
 							FreeEditReminders(&editReminders, countEdits);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						if (status == INCORRECT_DATA) {
@@ -162,7 +167,12 @@ int main() {
 							printf("Memory allocation error.\n");
 							free(laterActions);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							FreeEditReminders(&editReminders, countEdits);
 							return 1;
 						}
@@ -186,7 +196,12 @@ int main() {
 							free(laterActions);
 							free(addedID);
 							FreeEditReminders(&editReminders, countEdits);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						PrintGenderFound(current, head);
@@ -194,7 +209,7 @@ int main() {
 					case ANSWER_BIRTHDAY:
 						printf(
 						    "You choose find by birthday. The date of birth should be\n"
-						    "written as dd:MM:yyyy and can't be later today\n"
+						    "written as dd:MM:yyyy and can't be later today and 1900 year\n"
 						    "Please, enter the birthday: ");
 						int day, month, year;
 						status = GettingBirthday(&day, &month, &year);
@@ -204,7 +219,12 @@ int main() {
 							free(laterActions);
 							free(addedID);
 							FreeEditReminders(&editReminders, countEdits);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						if (status == INCORRECT_DATA) {
@@ -227,7 +247,12 @@ int main() {
 							printf("Memory allocation error.\n");
 							free(laterActions);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							FreeEditReminders(&editReminders, countEdits);
 							return 1;
 						}
@@ -278,7 +303,12 @@ int main() {
 					printf("Memory allocation error.\n");
 					free(laterActions);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					FreeEditReminders(&editReminders, countEdits);
 					return 1;
 				}
@@ -298,7 +328,12 @@ int main() {
 					printf("Memory allocation error.\n");
 					free(laterActions);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					FreeEditReminders(&editReminders, countEdits);
 					return 1;
 				}
@@ -335,7 +370,12 @@ int main() {
 						DeleteLiverList(&head);
 						free(laterActions);
 						FreeEditReminders(&editReminders, countEdits);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						printf("Memory allocation error.\n");
 						free(addedID);
 						return 1;
@@ -360,7 +400,12 @@ int main() {
 						FreeEditReminders(&editReminders, countEdits);
 						printf("Memory allocation error.\n");
 						free(addedID);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						return 1;
 					}
 					editReminders = tempReminders;
@@ -378,7 +423,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].changedOption = ANSWER_SURNAME;
@@ -405,7 +455,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].changedOption = ANSWER_NAME;
@@ -432,7 +487,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].changedOption = ANSWER_PATRONYMIC;
@@ -457,7 +517,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].changedOption = ANSWER_GENDER;
@@ -475,7 +540,7 @@ int main() {
 					case ANSWER_BIRTHDAY:
 						printf(
 						    "You choose change birthday date. It should be written like\n"
-						    "dd.MM.yyyy and can't be later today\n");
+						    "dd.MM.yyyy and can't be later today and 1900 year\n");
 						printf("Please, enter new birthday date: ");
 						int day, month, year;
 						status = GettingBirthday(&day, &month, &year);
@@ -485,7 +550,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].id = id;
@@ -512,7 +582,12 @@ int main() {
 							free(laterActions);
 							FreeEditReminders(&editReminders, countEdits);
 							free(addedID);
-							FreeLiverData(&deletedLivers, countDeletedLivers);
+							for (int i = 0; i < countDeletedLivers; i++) {
+								DestroyString(&deletedLivers[i].currentLiver.name);
+								DestroyString(&deletedLivers[i].currentLiver.surname);
+								DestroyString(&deletedLivers[i].currentLiver.patronymic);
+							}
+							free(deletedLivers);
 							return 1;
 						}
 						editReminders[countEdits].changedOption = ANSWER_SALARY;
@@ -552,7 +627,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Surname is %s\n", surname.symbols);
@@ -570,7 +650,12 @@ int main() {
 					printf("Memory allocation error.\n");
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					free(addedID);
 					return 1;
 				}
@@ -604,7 +689,12 @@ int main() {
 						DeleteLiverList(&head);
 						free(laterActions);
 						FreeEditReminders(&editReminders, countEdits);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						printf("Memory allocation error.\n");
 						free(addedID);
 						return 1;
@@ -617,29 +707,35 @@ int main() {
 				}
 				if (countDeletedLivers + 1 > totalLengthDeleted) {
 					totalLengthDeleted *= 2;
-					Liver* temp = (Liver*)realloc(deletedLivers, sizeof(Liver) * totalLengthDeleted);
+					LiverNode* temp = (LiverNode*)realloc(deletedLivers, sizeof(LiverNode) * totalLengthDeleted);
 					if (temp == NULL) {
 						DeleteLiverList(&head);
 						free(laterActions);
 						FreeEditReminders(&editReminders, countEdits);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						printf("Memory allocation error.\n");
 						free(addedID);
 						return 1;
 					}
 					deletedLivers = temp;
 				}
-				deletedLivers[countDeletedLivers].name.symbols = NULL;
-				CopyStringsOld(&deletedLivers[countDeletedLivers].name, &currentPtr->currentLiver.name);
-				deletedLivers[countDeletedLivers].surname.symbols = NULL;
-				CopyStringsOld(&deletedLivers[countDeletedLivers].surname, &currentPtr->currentLiver.surname);
-				deletedLivers[countDeletedLivers].patronymic.symbols = NULL;
-				CopyStringsOld(&deletedLivers[countDeletedLivers].patronymic, &currentPtr->currentLiver.patronymic);
-				deletedLivers[countDeletedLivers].dayBirthday = currentPtr->currentLiver.dayBirthday;
-				deletedLivers[countDeletedLivers].monthBirthday = currentPtr->currentLiver.monthBirthday;
-				deletedLivers[countDeletedLivers].yearBirthday = currentPtr->currentLiver.yearBirthday;
-				deletedLivers[countDeletedLivers].genderLiver = currentPtr->currentLiver.genderLiver;
-				deletedLivers[countDeletedLivers].salary = currentPtr->currentLiver.salary;
+				deletedLivers[countDeletedLivers].currentLiver.name.symbols = NULL;
+				CopyStringsOld(&deletedLivers[countDeletedLivers].currentLiver.name, &currentPtr->currentLiver.name);
+				deletedLivers[countDeletedLivers].currentLiver.surname.symbols = NULL;
+				CopyStringsOld(&deletedLivers[countDeletedLivers].currentLiver.surname, &currentPtr->currentLiver.surname);
+				deletedLivers[countDeletedLivers].currentLiver.patronymic.symbols = NULL;
+				CopyStringsOld(&deletedLivers[countDeletedLivers].currentLiver.patronymic, &currentPtr->currentLiver.patronymic);
+				deletedLivers[countDeletedLivers].currentLiver.dayBirthday = currentPtr->currentLiver.dayBirthday;
+				deletedLivers[countDeletedLivers].currentLiver.monthBirthday = currentPtr->currentLiver.monthBirthday;
+				deletedLivers[countDeletedLivers].currentLiver.yearBirthday = currentPtr->currentLiver.yearBirthday;
+				deletedLivers[countDeletedLivers].currentLiver.genderLiver = currentPtr->currentLiver.genderLiver;
+				deletedLivers[countDeletedLivers].currentLiver.salary = currentPtr->currentLiver.salary;
+				deletedLivers[countDeletedLivers].LiverID = currentPtr->LiverID;
 				DeleteLiverByID(head, id);
 				printf("Information deleted successfully.\n");
 				printf("---------------------------------------------------------------------------------\n");
@@ -674,7 +770,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Surname is %s\n", surname.symbols);
@@ -690,7 +791,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Name is %s\n", name.symbols);
@@ -707,12 +813,17 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Patronymic is %s\n", patronymic.symbols);
 				printf("---------------------------------------------------------------------------------\n");
-				printf("Date of birth should be written like dd.MM.yyyy and can't be later today\n");
+				printf("Date of birth should be written like dd.MM.yyyy and can't be later today and 1900 year\n");
 				printf("Please, enter the date of birth: ");
 				int day, month, year;
 				status = GettingBirthday(&day, &month, &year);
@@ -725,7 +836,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Birthday is %02d.%02d.%d\n", day, month, year);
@@ -743,7 +859,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				printf("Monthly revenue is %lf\n", salary);
@@ -761,7 +882,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				LiverNode* newLiver =
@@ -780,7 +906,12 @@ int main() {
 						FreeEditReminders(&editReminders, countEdits);
 						printf("Memory allocation error.\n");
 						free(addedID);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						return 1;
 					}
 					laterActions = tempOpt;
@@ -797,7 +928,12 @@ int main() {
 						free(laterActions);
 						FreeEditReminders(&editReminders, countEdits);
 						free(addedID);
-						FreeLiverData(&deletedLivers, countDeletedLivers);
+						for (int i = 0; i < countDeletedLivers; i++) {
+							DestroyString(&deletedLivers[i].currentLiver.name);
+							DestroyString(&deletedLivers[i].currentLiver.surname);
+							DestroyString(&deletedLivers[i].currentLiver.patronymic);
+						}
+						free(deletedLivers);
 						printf("Memory allocation error.\n");
 						return 1;
 					}
@@ -834,7 +970,12 @@ int main() {
 					free(laterActions);
 					FreeEditReminders(&editReminders, countEdits);
 					free(addedID);
-					FreeLiverData(&deletedLivers, countDeletedLivers);
+					for (int i = 0; i < countDeletedLivers; i++) {
+						DestroyString(&deletedLivers[i].currentLiver.name);
+						DestroyString(&deletedLivers[i].currentLiver.surname);
+						DestroyString(&deletedLivers[i].currentLiver.patronymic);
+					}
+					free(deletedLivers);
 					return 1;
 				}
 				status = IsValidFileName(fileName);
@@ -934,14 +1075,14 @@ int main() {
 					countOperationsUndo--;
 					printf("The previous option was option edit. Successfully changes were canceled.\n");
 				} else if (laterActions[countAllOperations - 1] == OPTION_DELETE) {
-					Liver curr = deletedLivers[countDeletedLivers - 1];
-					LiverNode* deleted = CreateLiverNode(&curr.surname, &curr.name, &curr.patronymic, curr.dayBirthday,
-					                                     curr.monthBirthday, curr.yearBirthday, curr.salary,
-					                                     100 + countLivers, curr.genderLiver);
+					LiverNode curr = deletedLivers[countDeletedLivers - 1];
+					LiverNode* deleted = CreateLiverNode(&curr.currentLiver.surname, &curr.currentLiver.name, &curr.currentLiver.patronymic,
+					                                     curr.currentLiver.dayBirthday, curr.currentLiver.monthBirthday, curr.currentLiver.yearBirthday,
+					                                     curr.currentLiver.salary, curr.LiverID, curr.currentLiver.genderLiver);
 					PushLiverNode(&head, deleted);
-					DestroyString(&deletedLivers[countDeletedLivers - 1].name);
-					DestroyString(&deletedLivers[countDeletedLivers - 1].surname);
-					DestroyString(&deletedLivers[countDeletedLivers - 1].patronymic);
+					DestroyString(&deletedLivers[countDeletedLivers - 1].currentLiver.name);
+					DestroyString(&deletedLivers[countDeletedLivers - 1].currentLiver.surname);
+					DestroyString(&deletedLivers[countDeletedLivers - 1].currentLiver.patronymic);
 					countDeletedLivers--;
 					countAllOperations--;
 					countOperationsUndo--;
@@ -968,7 +1109,12 @@ int main() {
 		free(ptr);
 	}
 	free(addedID);
-	FreeLiverData(&deletedLivers, countDeletedLivers);
+	for (int i = 0; i < countDeletedLivers; i++) {
+		DestroyString(&deletedLivers[i].currentLiver.name);
+		DestroyString(&deletedLivers[i].currentLiver.surname);
+		DestroyString(&deletedLivers[i].currentLiver.patronymic);
+	}
+	free(deletedLivers);
 	FreeEditReminders(&editReminders, countEdits);
 	free(laterActions);
 	return 0;

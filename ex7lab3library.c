@@ -1452,7 +1452,7 @@ void FreeEditReminders(EditReminder ** reminders, int amount) {
 	for (int i = 0; i < amount; i++) {
 		if ((*reminders)[i].changedOption == ANSWER_NAME || (*reminders)[i].changedOption == ANSWER_PATRONYMIC ||
 		    (*reminders)[i].changedOption == ANSWER_SURNAME) {
-			DestroyString(&reminders[i]->changedString);
+			DestroyString(&(*reminders)[i].changedString);
 		}
 	}
 	free(*reminders);
