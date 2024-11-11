@@ -5,41 +5,45 @@ typedef enum statusCode {
 	NORMAL,
 	MEMORY_ALLOCATION_ERROR,
 	FILE_OPEN_ERROR,
-	WRONG_ARGUMENTS
+	WRONG_ARGUMENTS,
+	USUAL_LINE,
+	DEFINE_LINE
 } statusCode;
 
-typedef struct nodeMap {
+typedef struct nodeTable {
+	int index;
 	char* key;
 	char* value;
-	struct nodeMap* next;
-} nodeMap;
+	struct nodeTable* next;
+	int countChildren;
+} nodeTable;
 
-typedef struct hashMap {
+typedef struct hashTable {
 	int amountElements;
 	int capacity;
-	nodeMap** head;
-	int maximumChain;
-	int minimumChain;
-} hashMap;
+	nodeTable** head;
+	unsigned long int* indexes;
+	int lengthIndexes;
+} hashTable;
 
 typedef enum constants {
-	HASHSIZE = 128,
-	SYSTEM_BASE = 62
+	HASH_SIZE = 128,
+	SYSTEM_BASE = 62,
+	START_LENGTH_BUFFER = 100
 } constants;
 
 //getting file name
 statusCode GetFileName(int argc, char** argv, char** fileName);
 
 //create new node
-void CreateNodeMap(nodeMap* currentNode, char* key, char* value);
-//create hash map
-statusCode CreateHashMap(hashMap* currentHashMap);
-//insert into
-statusCode InsertHashMap(hashMap* headMap, char* key, char* value);
-//search
-char* SearchHashMap(hashMap* headMap, char* key);
-//free hashMap
-void FreeHashMap(hashMap** headMap);
-
+void CreateNodeMap(nodeTable* currentNode, char* key, char* value, int index);
+//create hash table
+statusCode CreateHashTable(hashTable* currentHashTable, int hashSize);
+//destroy hash table
+void DestroyHashTable(hashTable* table);
+//inserts an elem and checks if table needs to reorganize
+statusCode InsertAndCheck(hashTable* table, char* key, char* value);
+//finds and elem in hash table
+char* FindHashTable(hashTable* table, char* key);
 
 #endif
