@@ -4,25 +4,42 @@
 #include "ex1lab4library.h"
 
 int main(int argc, char** argv) {
-	//	char* fileName;
-	//	statusCode status = GetFileName(argc, argv, &fileName);
-	//	if (status == WRONG_ARGUMENTS) {
-	//		printf("Wrong number of arguments. Must be one - file name.\n");
-	//		return 1;
-	//	}
-	struct hashMap* map = (hashMap*)malloc(sizeof(hashMap));
-	if (map == NULL) {
-		printf("Memory allocation error.\n");
+	char* fileName;
+	statusCode status = GetFileName(argc, argv, &fileName);
+	if (status == WRONG_ARGUMENTS) {
+		printf("The number of arguments should be one (file name).\n");
 		return 1;
 	}
-	map->head = NULL;
-	CreateHashMap(map);
-	statusCode status = InsertHashMap(map, "m", "kjslfj");
-	InsertHashMap(map, "p", "jlsjfs");
-	InsertHashMap(map, "d", "slkdjf");
-	printf("%s\n", SearchHashMap(map, "p"));
-	printf("%s\n", SearchHashMap(map, "d"));
-	printf("%s\n", SearchHashMap(map, "m"));
-	FreeHashMap(&map);
+	status = FileProcessing(fileName, "output.txt");
+	switch (status) {
+		case MEMORY_ALLOCATION_ERROR:
+			printf("Memory allocation error.\n");
+			return 1;
+		case FILE_OPEN_ERROR:
+			printf("An error while opening files.\n");
+			return 1;
+	}
+	status = OverwriteTheFile("output.txt", fileName);
+	switch (status) {
+		case WRONG_ARGUMENTS:
+			printf("Arguments are invalid.\n");
+			return 1;
+		case FILE_OPEN_ERROR:
+			printf("An error while opening files.\n");
+			return 1;
+		case FILE_WRITING_ERROR:
+			printf("An error while writing in file.\n");
+			return 1;
+	}
+	status = ClearFile("output.txt");
+	switch (status) {
+		case FILE_OPEN_ERROR:
+			printf("An error while opening file.\n");
+			return 1;
+		case WRONG_ARGUMENTS:
+			printf("Arguments are invalid.\n");
+			return 1;
+	}
+	printf("Everything is successful.\n");
 	return 0;
 }
