@@ -5,7 +5,6 @@
 
 #include "../../stringLibrary.h"
 
-
 statusCode ClearFile(const char* fileName) {
 	if (fileName == NULL) {
 		return WRONG_ARGUMENTS;
@@ -18,9 +17,8 @@ statusCode ClearFile(const char* fileName) {
 	return NORMAL;
 }
 
-
-statusCode WriteToFile(const char* string, hashTable * table, FILE* output) {
-	char* buffer = (char*)malloc(sizeof(char) * START_LENGTH_WORD);
+statusCode WriteToFile(const char* string, hashTable* table, FILE* output) {
+	char* buffer = (char*)malloc(sizeof(char) * START_LENGTH_BUFFER);
 	if (buffer == NULL) {
 		return MEMORY_ALLOCATION_ERROR;
 	}
@@ -34,6 +32,10 @@ statusCode WriteToFile(const char* string, hashTable * table, FILE* output) {
 				buffer[currentLength] = '\0';
 				char* value;
 				status = FindHashTable(table, buffer, &value);
+				if (status == MEMORY_ALLOCATION_ERROR) {
+					free(buffer);
+					return MEMORY_ALLOCATION_ERROR;
+				}
 				if (status == NOT_FOUND) {
 					fprintf(output, "%s", buffer);
 				} else {
@@ -44,7 +46,7 @@ statusCode WriteToFile(const char* string, hashTable * table, FILE* output) {
 			}
 			fputc(string[index], output);
 		} else {
-			if (currentLength + 1 > totalLength) {
+			if (currentLength + 1 >= totalLength) {
 				totalLength *= 2;
 				char* tempBuffer = (char*)realloc(buffer, sizeof(char) * totalLength);
 				if (tempBuffer == NULL) {
@@ -61,6 +63,10 @@ statusCode WriteToFile(const char* string, hashTable * table, FILE* output) {
 		buffer[currentLength] = '\0';
 		char* value;
 		status = FindHashTable(table, buffer, &value);
+		if (status == MEMORY_ALLOCATION_ERROR) {
+			free(buffer);
+			return MEMORY_ALLOCATION_ERROR;
+		}
 		if (status == NOT_FOUND) {
 			fprintf(output, "%s", buffer);
 		} else {
@@ -126,7 +132,7 @@ statusCode FileProcessing(const char* inputFile, const char* outputFile) {
 		fclose(output);
 		return MEMORY_ALLOCATION_ERROR;
 	}
-	status = CreateHashTable(table, 128);
+	status = CreateHashTable(table, HASH_SIZE);
 	if (status == MEMORY_ALLOCATION_ERROR) {
 		free(buffer);
 		fclose(input);
@@ -141,9 +147,24 @@ statusCode FileProcessing(const char* inputFile, const char* outputFile) {
 				continue;
 			}
 			buffer[currentLength] = '\0';
-			if (IsReplacementString(buffer) == DEFINE_LINE) {
-				char* key, *value;
+			status = IsReplacementString(buffer);
+			if (status == MEMORY_ALLOCATION_ERROR) {
+				free(buffer);
+				fclose(input);
+				fclose(output);
+				DestroyHashTable(table);
+				return MEMORY_ALLOCATION_ERROR;
+			}
+			if (status == DEFINE_LINE) {
+				char *key, *value;
 				status = GetReplace(buffer, &key, &value);
+				if (status == MEMORY_ALLOCATION_ERROR) {
+					free(buffer);
+					fclose(input);
+					fclose(output);
+					DestroyHashTable(table);
+					return MEMORY_ALLOCATION_ERROR;
+				}
 				status = InsertAndCheck(table, key, value);
 				if (status == MEMORY_ALLOCATION_ERROR) {
 					free(buffer);
@@ -156,10 +177,10 @@ statusCode FileProcessing(const char* inputFile, const char* outputFile) {
 				}
 				free(key);
 				free(value);
-			}
-			else {
+			} else {
 				status = WriteToFile(buffer, table, output);
 				if (status == MEMORY_ALLOCATION_ERROR) {
+					DestroyHashTable(table);
 					free(buffer);
 					fclose(input);
 					fclose(output);
@@ -192,7 +213,6 @@ statusCode FileProcessing(const char* inputFile, const char* outputFile) {
 	fclose(output);
 	return NORMAL;
 }
-
 
 statusCode GetReplace(const char* string, char** key, char** value) {
 	int index = 0;
@@ -230,6 +250,10 @@ statusCode GetReplace(const char* string, char** key, char** value) {
 	}
 	(*key)[currentLengthKey] = '\0';
 	while (string[index] == ' ' || string[index] == '\t') index++;
+	if (lengthValue == 0) {
+		(*value)[0] = '\0';
+		return NORMAL;
+	}
 	while (string[index] != '\0') (*value)[currentLengthValue++] = string[index++];
 	(*value)[currentLengthValue] = '\0';
 	return NORMAL;
@@ -251,7 +275,6 @@ statusCode IsReplacementString(const char* string) {
 	free(goodStart);
 	int index = 7;
 	int flagOldWord = 0;
-	int flagNewWord = 0;
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	while (IsAlpha(string[index]) || IsDigit(string[index])) {
 		index++;
@@ -260,9 +283,8 @@ statusCode IsReplacementString(const char* string) {
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	while (string[index] != ' ' && string[index] != '\t' && string[index] != '\0') {
 		index++;
-		flagNewWord = 1;
 	}
-	if (flagOldWord && flagNewWord == 1) {
+	if (flagOldWord) {
 		return DEFINE_LINE;
 	}
 	return USUAL_LINE;
@@ -345,10 +367,10 @@ statusCode InsertHashTable(hashTable* table, const char* key, const char* value)
 		table->array[hash] = newNode;
 	} else {
 		nodeTable* temp = table->array[hash];
-		while (temp -> next != NULL) {
-			temp = temp -> next;
+		while (temp->next != NULL) {
+			temp = temp->next;
 		}
-		temp -> next = newNode;
+		temp->next = newNode;
 	}
 	table->countElements[hash]++;
 	return NORMAL;
@@ -361,7 +383,7 @@ statusCode FindHashTable(hashTable* table, const char* key, char** value) {
 		return NOT_FOUND;
 	}
 	while (result != NULL && CompareChars(result->key, key) != 0) {
-		result = result ->next;
+		result = result->next;
 	}
 	if (result == NULL) {
 		return NOT_FOUND;
@@ -383,11 +405,12 @@ statusCode TableIsRight(hashTable* table) {
 	int maximum = 0;
 	for (int i = 0; i < table->hashSize; i++) {
 		int cur = table->countElements[i];
+		if (cur == 0) continue;
 		if (cur < minimum) minimum = cur;
 		if (cur > maximum) maximum = cur;
 	}
 	if (minimum == 0) {
-		return NORMAL_TABLE;
+		return UNEQUAL_TABLE;
 	}
 	if (maximum / minimum >= 2) {
 		return UNEQUAL_TABLE;
@@ -413,21 +436,6 @@ statusCode InsertAndCheck(hashTable* table, const char* key, const char* value) 
 		free(newHashTable);
 		return MEMORY_ALLOCATION_ERROR;
 	}
-	int indexTemp = 0;
-	nodeTable* tempPtr = table->array[indexTemp];
-	while (tempPtr == NULL) tempPtr = table->array[indexTemp++];
-	while (tempPtr -> next != NULL) tempPtr = tempPtr -> next;
-	nodeTable* previous = tempPtr;
-	while (tempPtr != NULL) {
-		indexTemp++;
-		tempPtr = table->array[indexTemp];
-		while (tempPtr == NULL && indexTemp < table->hashSize - 1) tempPtr = table->array[indexTemp++];
-		if (indexTemp == table->hashSize - 1) break;
-		previous -> next = tempPtr;
-		while (tempPtr != NULL) tempPtr = tempPtr -> next;
-		previous = tempPtr;
-	}
-	tempPtr = table->array[0];
 	int amountElements = 0;
 	for (int i = 0; i < table->hashSize; i++) {
 		amountElements += table->countElements[i];
@@ -438,32 +446,45 @@ statusCode InsertAndCheck(hashTable* table, const char* key, const char* value) 
 		return MEMORY_ALLOCATION_ERROR;
 	}
 	int index = 0;
-	while (tempPtr != NULL) {
-		cacheElements[index++] = HashFunctionModule(key, table->hashSize);
-		tempPtr = tempPtr -> next;
+	for (int i = 0; i < table->hashSize; i++) {
+		nodeTable* current = table->array[i];
+		while (current != NULL) {
+			cacheElements[index++] = HashFunctionModule(current->key, newHashTable->hashSize);
+			current = current->next;
+		}
 	}
-	tempPtr = table->array[0];
 	index = 0;
-	while (tempPtr != NULL) {
-		newHashTable->array[cacheElements[index++]] = tempPtr;
-		tempPtr = tempPtr -> next;
+	for (int i = 0; i < table->hashSize; i++) {
+		nodeTable* current = table->array[i];
+		while (current != NULL) {
+			nodeTable* next = current->next;
+			current->next = NULL;
+			int newHash = cacheElements[index++];
+			if (newHashTable->array[newHash] == NULL) {
+				newHashTable->array[newHash] = current;
+			} else {
+				nodeTable* temp = newHashTable->array[newHash];
+				while (temp->next != NULL) {
+					temp = temp->next;
+				}
+				temp->next = current;
+			}
+			newHashTable->countElements[newHash]++;
+			current = next;
+		}
 	}
-	free(table -> countElements);
-	nodeTable* tempNode = table->array[0];
-	while (tempNode != NULL) {
-		nodeTable* deleteNode = tempNode;
-		free(deleteNode->key);
-		free(deleteNode->value);
-		tempNode = tempNode -> next;
-	}
+	free(table->array);
+	free(table->countElements);
+	free(cacheElements);
 	*table = *newHashTable;
+	free(newHashTable);
 	return NORMAL;
 }
 
 void DestroyHashTable(hashTable* table) {
 	free(table->countElements);
 	nodeTable* tempNode = table->array[0];
-	for (int i = 0; i < table->hashSize; i++){
+	for (int i = 0; i < table->hashSize; i++) {
 		tempNode = table->array[i];
 		while (tempNode != NULL) {
 			free(tempNode->key);
