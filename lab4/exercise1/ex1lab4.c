@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#define a zz
+#define zz 78
 #include "ex1lab4library.h"
 
 int main(int argc, char** argv) {
@@ -19,27 +20,27 @@ int main(int argc, char** argv) {
 			printf("An error while opening files.\n");
 			return 1;
 	}
-	status = OverwriteTheFile("output.txt", fileName);
-	switch (status) {
-		case WRONG_ARGUMENTS:
-			printf("Arguments are invalid.\n");
-			return 1;
-		case FILE_OPEN_ERROR:
-			printf("An error while opening files.\n");
-			return 1;
-		case FILE_WRITING_ERROR:
-			printf("An error while writing in file.\n");
-			return 1;
-	}
-	status = ClearFile("output.txt");
-	switch (status) {
-		case FILE_OPEN_ERROR:
-			printf("An error while opening file.\n");
-			return 1;
-		case WRONG_ARGUMENTS:
-			printf("Arguments are invalid.\n");
-			return 1;
-	}
+//	status = OverwriteTheFile("output.txt", fileName);
+//	switch (status) {
+//		case WRONG_ARGUMENTS:
+//			printf("Arguments are invalid.\n");
+//			return 1;
+//		case FILE_OPEN_ERROR:
+//			printf("An error while opening files.\n");
+//			return 1;
+//		case FILE_WRITING_ERROR:
+//			printf("An error while writing in file.\n");
+//			return 1;
+//	}
+//	status = ClearFile("output.txt");
+//	switch (status) {
+//		case FILE_OPEN_ERROR:
+//			printf("An error while opening file.\n");
+//			return 1;
+//		case WRONG_ARGUMENTS:
+//			printf("Arguments are invalid.\n");
+//			return 1;
+//	}
 	printf("Everything is successful.\n");
 	return 0;
 }

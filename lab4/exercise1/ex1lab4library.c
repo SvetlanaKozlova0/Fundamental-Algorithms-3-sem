@@ -39,8 +39,19 @@ statusCode WriteToFile(const char* string, hashTable* table, FILE* output) {
 				if (status == NOT_FOUND) {
 					fprintf(output, "%s", buffer);
 				} else {
-					fprintf(output, "%s", value);
-					free(value);
+					char* tempValue = NULL;
+					StringCopy(tempValue, value);
+					while (status != NOT_FOUND) {
+						tempValue = value;
+						char* newValue;
+						status = FindHashTable(table, tempValue, &newValue);
+						if (status != NOT_FOUND) {
+							StringCopy(value, newValue);
+							free(newValue);
+						}
+					}
+					fprintf(output, "%s", tempValue);
+					free(tempValue);
 				}
 				currentLength = 0;
 			}
@@ -267,13 +278,16 @@ statusCode IsReplacementString(const char* string) {
 	if (goodStart == NULL) {
 		return MEMORY_ALLOCATION_ERROR;
 	}
-	for (int i = 0; i < 7; i++) goodStart[i] = string[i];
+	int index = 0;
+	while (string[index] == ' ' || string[index] == '\t') index++;
+	if (StringLength(string + index) < 8) return USUAL_LINE;
+	for (int i = 0; i < 7; i++) goodStart[i] = string[i + index];
 	if (CompareChars("#define", goodStart) != 0) {
 		free(goodStart);
 		return USUAL_LINE;
 	}
 	free(goodStart);
-	int index = 7;
+	index += 7;
 	int flagOldWord = 0;
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	while (IsAlpha(string[index]) || IsDigit(string[index])) {
@@ -397,6 +411,7 @@ statusCode FindHashTable(hashTable* table, const char* key, char** value) {
 		free(*value);
 		return MEMORY_ALLOCATION_ERROR;
 	}
+	statusCode current = NORMAL;
 	return NORMAL;
 }
 
