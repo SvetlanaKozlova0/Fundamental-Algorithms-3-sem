@@ -76,9 +76,9 @@ int main() {
 		printf("An error while opening file.\n");
 		return 1;
 	}
-	status = overfprintf(file,
+	status = overfprintf(stdout,
 	                     "1. roman number 19 = %Ro.\n"
-	                     "2. zeckendorf number 54 = %Zr.\n"
+	                     "2. zeckendorf number 55 = %Zr.\n"
 	                     "3. 10 in 5 system = %Cv.\n"
 	                     "4. 11 in 13 system = %CV.\n"
 	                     "5. 'a' from 11 to 10 system = %to.\n"
@@ -88,8 +88,8 @@ int main() {
 	                     "9. memory dump of 5.4 = %md.\n"
 	                     "10. memory dump of 52.3 = %mf.\n"
 	                     "11. percent symbol = %%.\n"
-	                     "12. standard specification with flag = %.2f.\n",
-	                     19, 54, 10, 5, 11, 13, "a", 11, "Z", 36, 5, 45, 5.4, 52.3, 45.3);
+	                     "12. standard specification with flag = %*d.\n",
+	                     19, 55, 10, 5, 11, 13, "a", 11, "Z", 36, 5, 45, 5.4, 52.3, 45,3);
 	switch (status) {
 		case MEMORY_ALLOCATION_ERROR:
 			printf("Memory allocation error.\n");
