@@ -33,9 +33,11 @@ statusCode InstructionsProcessing(const char* fileName) {
 	statusCode status = NORMAL;
 	typeInstruction type = TYPE_UNKNOWN;
 	while ((c = getc(input)) != EOF) {
-		if (c == '\n') {
+		while (c == '\r' || c == '\n') c = getc(input);
+		if (c == ';') {
 			buffer[currentLength] = '\0';
 			currentLength = 0;
+			printf("%s\n", buffer);
 			status = TypeInstruction(buffer, &type);
 			if (status == MEMORY_ALLOCATION_ERROR) {
 				free(buffer);
@@ -904,14 +906,9 @@ statusCode ValidateLoad(const char* string) {
 	if (!(string[index] == 't' && string[index + 1] == 'x' && string[index + 2] == 't')) return INVALID_SYNTAX;
 	index += 3;
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		flagEnd = 1;
-		index++;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\r' && string[index] != '\0') return INVALID_SYNTAX;
-	if (flagCommand && flagFileFirst && point && flagComma == 1 && flagEnd) return NORMAL;
+	if (flagCommand && flagFileFirst && point && flagComma == 1) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -963,14 +960,9 @@ statusCode ValidateRand(const char* string) {
 		flagIsRight = 1;
 	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		flagEnd = 1;
-		index++;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-	if (comma == 3 && flagIsLeft && flagIsRight && flagCount && flagIsCommand && flagEnd) return NORMAL;
+	if (comma == 3 && flagIsLeft && flagIsRight && flagCount && flagIsCommand) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -995,14 +987,9 @@ statusCode ValidateConcat(const char* string) {
 	if (!IsAlpha(string[index])) return INVALID_SYNTAX;
 	index++;
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		index++;
-		flagEnd = 1;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-	if (comma && flagCommand && flagEnd) return NORMAL;
+	if (comma && flagCommand) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -1026,14 +1013,9 @@ statusCode ValidateFree(const char* string) {
 		index++;
 	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		index++;
-		flagEnd = 1;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-	if (flagEnd == 1 && openFlag == 1 && endFlag == 1) return NORMAL;
+	if (openFlag == 1 && endFlag == 1) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -1072,14 +1054,9 @@ statusCode ValidateRemove(const char* string) {
 		flagSecond = 1;
 	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		index++;
-		flagEnd = 1;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-	if (comma == 2 && flagFirst && flagSecond && flagIsCommand && flagEnd) return NORMAL;
+	if (comma == 2 && flagFirst && flagSecond && flagIsCommand) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -1126,14 +1103,9 @@ statusCode ValidateCopy(const char* string) {
 	if (!IsAlpha(string[index])) return INVALID_SYNTAX;
 	index++;
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		flagEnd = 1;
-		index++;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-	if (comma == 3 && flagFirst && flagSecond && flagIsCommand && flagEnd) return NORMAL;
+	if (comma == 3 && flagFirst && flagSecond && flagIsCommand) return NORMAL;
 	return INVALID_SYNTAX;
 }
 
@@ -1151,14 +1123,9 @@ statusCode ValidateSort(const char* string) {
 		index++;
 	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		index++;
-		flagEnd = 1;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\r' && string[index] != '\0') return INVALID_SYNTAX;
-	if (flag == 0 || flagEnd == 0) return INVALID_SYNTAX;
+	if (flag == 0) return INVALID_SYNTAX;
 	return NORMAL;
 }
 
@@ -1170,14 +1137,8 @@ statusCode ValidateShuffle(const char* string) {
 	if (!IsAlpha(string[index])) return INVALID_SYNTAX;
 	index++;
 	while (string[index] == ' ' || string[index] == '\t') index++;
-	int flagEnd = 0;
-	if (string[index] == ';') {
-		index++;
-		flagEnd = 1;
-	}
 	while (string[index] == ' ' || string[index] == '\t') index++;
 	if (string[index] != '\r' && string[index] != '\0') return INVALID_SYNTAX;
-	if (flagEnd == 0) return INVALID_SYNTAX;
 	return NORMAL;
 }
 
@@ -1201,13 +1162,8 @@ statusCode ValidatePrint(const char* string) {
 			index++;
 		}
 		while (string[index] == ' ' || string[index] == '\t') index++;
-		int flagEnd = 0;
-		if (string[index] == ';') {
-			index++;
-			flagEnd = 1;
-		}
 		while (string[index] == ' ' || string[index] == '\t') index++;
-		if (string[index] == '\0' || string[index] == '\r' && flagEnd == 1) return NORMAL;
+		if (string[index] == '\0' || string[index] == '\r') return NORMAL;
 		if (string[index] == ',') {
 			index++;
 			comma++;
@@ -1216,13 +1172,9 @@ statusCode ValidatePrint(const char* string) {
 		if (!IsDigit(string[index])) return INVALID_SYNTAX;
 		while (IsDigit(string[index])) index++;
 		while (string[index] == ' ' || string[index] == '\t') index++;
-		if (string[index] == ';') {
-			index++;
-			flagEnd++;
-		}
 		while (string[index] == ' ' || string[index] == '\t') index++;
 		if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
-		if (comma != 2 || flagEnd != 1) return INVALID_SYNTAX;
+		if (comma != 2) return INVALID_SYNTAX;
 		return NORMAL;
 	} else if (IsAlpha(string[index])) {
 		int flag = 0;
@@ -1231,16 +1183,10 @@ statusCode ValidatePrint(const char* string) {
 			flag = 1;
 		}
 		while (string[index] == ' ' || string[index] == '\t') index++;
-		int flagEnd = 0;
-		if (string[index] == ';') {
-			index++;
-			flagEnd = 1;
-		}
 		while (string[index] == ' ' || string[index] == '\t') index++;
 		if (string[index] != '\0' && string[index] != '\r') return INVALID_SYNTAX;
 		if (flag != 1) return INVALID_SYNTAX;
 		if (comma != 1) return INVALID_SYNTAX;
-		if (flagEnd != 1) return INVALID_SYNTAX;
 		return NORMAL;
 	} else
 		return INVALID_SYNTAX;
