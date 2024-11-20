@@ -555,9 +555,7 @@ int CompareLiversDecrease(const void* first, const void* second) {
 	return 0;
 }
 
-
 int CompareLiversIncrease(const void* first, const void* second) { return -CompareLiversDecrease(first, second); }
-
 
 LiverNode* CreateLiverNode(String* surname, String* name, String* patronymic, int day, int month, int year,
                            double salary, int liverID, gender liverGender) {
@@ -589,17 +587,17 @@ void InsertLiverNode(LiverNode* previousNode, LiverNode* newNode) {
 void PushLiverNode(LiverNode** head, LiverNode* newNode) {
 	LiverNode* ptr = *head;
 	LiverNode* previous = *head;
-	while (ptr->currentLiver.yearBirthday > newNode ->currentLiver.yearBirthday) {
+	while (ptr->currentLiver.yearBirthday > newNode->currentLiver.yearBirthday) {
 		previous = ptr;
-		ptr = ptr -> next;
+		ptr = ptr->next;
 	}
-	while (ptr->currentLiver.monthBirthday > newNode ->currentLiver.monthBirthday) {
+	while (ptr->currentLiver.monthBirthday > newNode->currentLiver.monthBirthday) {
 		previous = ptr;
-		ptr = ptr -> next;
+		ptr = ptr->next;
 	}
-	while (ptr->currentLiver.dayBirthday > newNode ->currentLiver.dayBirthday) {
+	while (ptr->currentLiver.dayBirthday > newNode->currentLiver.dayBirthday) {
 		previous = ptr;
-		ptr = ptr -> next;
+		ptr = ptr->next;
 	}
 	InsertLiverNode(previous, newNode);
 }
@@ -616,9 +614,9 @@ void DeleteLiverNode(LiverNode* previousNode) {
 void DeleteLiverByID(LiverNode* head, int id) {
 	LiverNode* previous = head;
 	LiverNode* ptr = head;
-	while (ptr != NULL && ptr -> LiverID != id) {
+	while (ptr != NULL && ptr->LiverID != id) {
 		previous = ptr;
-		ptr = ptr -> next;
+		ptr = ptr->next;
 	}
 	DeleteLiverNode(previous);
 }
@@ -917,7 +915,6 @@ statusCode GettingPatronymic(String* patronymic) {
 	return NORMAL;
 }
 
-
 statusCode IsValidName(char* name) {
 	size_t length = StringLength(name);
 	if (length == 0) {
@@ -938,7 +935,6 @@ statusCode IsValidName(char* name) {
 	return NORMAL;
 }
 
-
 statusCode IsValidFileName(const char* string) {
 	int index = 0;
 	int flagGoodEnding = 0;
@@ -956,7 +952,6 @@ statusCode IsValidFileName(const char* string) {
 	if (string[index] != '\0' || !(flagGoodStart && flagGoodEnding)) return INCORRECT_DATA;
 	return NORMAL;
 }
-
 
 statusCode ConsoleReadLatin(char** currentString) {
 	*currentString = (char*)malloc(sizeof(char) * START_LENGTH_STRING);
@@ -990,7 +985,6 @@ statusCode ConsoleReadLatin(char** currentString) {
 	return NORMAL;
 }
 
-
 statusCode ConsoleReadStr(char** currentString) {
 	*currentString = (char*)malloc(sizeof(char) * START_LENGTH_STRING);
 	if (*currentString == NULL) {
@@ -1022,7 +1016,6 @@ statusCode ConsoleReadStr(char** currentString) {
 	}
 	return NORMAL;
 }
-
 
 statusCode ConsoleReadBirthday(int* day, int* month, int* year) {
 	char* currentString;
@@ -1072,13 +1065,13 @@ statusCode ConsoleReadBirthday(int* day, int* month, int* year) {
 	return NORMAL;
 }
 
-
 statusCode GettingBirthday(int* day, int* month, int* year) {
 	statusCode status = INCORRECT_DATA;
 	int flagIsFirst = 1;
 	while (status == INCORRECT_DATA) {
 		if (!flagIsFirst) {
-			printf("Incorrect birthday. It should be written like: dd.MM.yyyy\n"
+			printf(
+			    "Incorrect birthday. It should be written like: dd.MM.yyyy\n"
 			    "and can't be later today. Try again: ");
 		}
 		flagIsFirst = 0;
@@ -1090,13 +1083,13 @@ statusCode GettingBirthday(int* day, int* month, int* year) {
 	return NORMAL;
 }
 
-
 statusCode GettingSalary(double* salary) {
 	statusCode status = INCORRECT_DATA;
 	int flagIsFirst = 1;
 	while (status == INCORRECT_DATA) {
 		if (!flagIsFirst) {
-			printf("Incorrect monthly revenue. It should be non-negative real number\n"
+			printf(
+			    "Incorrect monthly revenue. It should be non-negative real number\n"
 			    "(separator is dot). Try again: ");
 		}
 		flagIsFirst = 0;
@@ -1108,14 +1101,14 @@ statusCode GettingSalary(double* salary) {
 	return NORMAL;
 }
 
-
 statusCode GettingGender(gender* current) {
 	statusCode status = INCORRECT_DATA;
 	int flagIsFirst = 1;
 	char* string;
 	while (status == INCORRECT_DATA) {
 		if (!flagIsFirst) {
-			printf("Incorrect data. Type M for man and W for woman.\n"
+			printf(
+			    "Incorrect data. Type M for man and W for woman.\n"
 			    "Try again: ");
 		}
 		flagIsFirst = 0;
@@ -1126,12 +1119,10 @@ statusCode GettingGender(gender* current) {
 		if (StringLength(string) == 0) {
 			free(string);
 			status = INCORRECT_DATA;
-		}
-		else if (StringLength(string) != 1 || !(string[0] == 'W' || string[0] == 'M')) {
+		} else if (StringLength(string) != 1 || !(string[0] == 'W' || string[0] == 'M')) {
 			free(string);
 			status = INCORRECT_DATA;
-		}
-		else if (string[0] == 'M' || string[0] == 'm') {
+		} else if (string[0] == 'M' || string[0] == 'm') {
 			free(string);
 			*current = GENDER_MAN;
 			return NORMAL;
@@ -1143,7 +1134,6 @@ statusCode GettingGender(gender* current) {
 	}
 	return NORMAL;
 }
-
 
 void PrintNameFound(char* resultScan, LiverNode* head) {
 	String stringScan = CreateString(resultScan);
@@ -1162,7 +1152,7 @@ void PrintNameFound(char* resultScan, LiverNode* head) {
 			printf("Surname: %s\n", ptr->currentLiver.surname.symbols);
 			printf("Name: %s\n", ptr->currentLiver.name.symbols);
 			printf("Patronymic: %s\n", ptr->currentLiver.patronymic.symbols);
-			if (ptr ->currentLiver.genderLiver == GENDER_MAN) {
+			if (ptr->currentLiver.genderLiver == GENDER_MAN) {
 				printf("Gender: MAN\n");
 			} else {
 				printf("Gender: WOMAN\n");
@@ -1201,7 +1191,7 @@ int PrintSurnameFound(char* resultScan, LiverNode* head) {
 			printf("Surname: %s\n", ptr->currentLiver.surname.symbols);
 			printf("Name: %s\n", ptr->currentLiver.name.symbols);
 			printf("Patronymic: %s\n", ptr->currentLiver.patronymic.symbols);
-			if (ptr -> currentLiver.genderLiver == GENDER_MAN) {
+			if (ptr->currentLiver.genderLiver == GENDER_MAN) {
 				printf("Gender: MAN\n");
 			} else
 				printf("Gender: WOMAN\n");
@@ -1222,7 +1212,6 @@ int PrintSurnameFound(char* resultScan, LiverNode* head) {
 	DestroyString(&stringScan);
 	return count;
 }
-
 
 void PrintPatronymicFound(char* resultScan, LiverNode* head) {
 	String stringScan = CreateString(resultScan);
@@ -1260,7 +1249,6 @@ void PrintPatronymicFound(char* resultScan, LiverNode* head) {
 	DestroyString(&stringScan);
 }
 
-
 void PrintGenderFound(gender current, LiverNode* head) {
 	LiverNode* ptr = head;
 	int count = 0;
@@ -1274,7 +1262,7 @@ void PrintGenderFound(gender current, LiverNode* head) {
 			printf("Surname: %s\n", ptr->currentLiver.surname.symbols);
 			printf("Name: %s\n", ptr->currentLiver.name.symbols);
 			printf("Patronymic: %s\n", ptr->currentLiver.patronymic.symbols);
-			if (ptr -> currentLiver.genderLiver ==  GENDER_MAN) {
+			if (ptr->currentLiver.genderLiver == GENDER_MAN) {
 				printf("Gender: MAN\n");
 			} else {
 				printf("Gender: WOMAN\n");
@@ -1295,7 +1283,6 @@ void PrintGenderFound(gender current, LiverNode* head) {
 	}
 }
 
-
 void PrintBirthdayFound(int day, int month, int year, LiverNode* head) {
 	LiverNode* ptr = head;
 	int count = 0;
@@ -1310,7 +1297,7 @@ void PrintBirthdayFound(int day, int month, int year, LiverNode* head) {
 			printf("Surname: %s\n", ptr->currentLiver.surname.symbols);
 			printf("Name: %s\n", ptr->currentLiver.name.symbols);
 			printf("Patronymic: %s\n", ptr->currentLiver.patronymic.symbols);
-			if (ptr -> currentLiver.genderLiver == GENDER_MAN) {
+			if (ptr->currentLiver.genderLiver == GENDER_MAN) {
 				printf("Gender: MAN\n");
 			} else
 				printf("Gender: WOMAN\n");
@@ -1329,7 +1316,6 @@ void PrintBirthdayFound(int day, int month, int year, LiverNode* head) {
 		printf("---------------------------------------------------------------------------------\n");
 	}
 }
-
 
 statusCode ConsoleReadDouble(double* result) {
 	char* currentString;
@@ -1377,7 +1363,6 @@ statusCode ConsoleReadDouble(double* result) {
 	return NORMAL;
 }
 
-
 statusCode ConsoleReadInteger(int* result) {
 	char* currentString;
 	currentString = (char*)malloc(sizeof(char) * START_LENGTH_STRING);
@@ -1413,7 +1398,6 @@ statusCode ConsoleReadInteger(int* result) {
 	return NORMAL;
 }
 
-
 void PrintSalaryFound(double salary, double epsilon, LiverNode* head) {
 	LiverNode* ptr = head;
 	int count = 0;
@@ -1427,7 +1411,7 @@ void PrintSalaryFound(double salary, double epsilon, LiverNode* head) {
 			printf("Surname: %s\n", ptr->currentLiver.surname.symbols);
 			printf("Name: %s\n", ptr->currentLiver.name.symbols);
 			printf("Patronymic: %s\n", ptr->currentLiver.patronymic.symbols);
-			if (ptr -> currentLiver.genderLiver == GENDER_MAN) {
+			if (ptr->currentLiver.genderLiver == GENDER_MAN) {
 				printf("Gender: MAN\n");
 			} else {
 				printf("Gender: WOMAN\n");
@@ -1448,7 +1432,7 @@ void PrintSalaryFound(double salary, double epsilon, LiverNode* head) {
 	}
 }
 
-void FreeEditReminders(EditReminder ** reminders, int amount) {
+void FreeEditReminders(EditReminder** reminders, int amount) {
 	for (int i = 0; i < amount; i++) {
 		if ((*reminders)[i].changedOption == ANSWER_NAME || (*reminders)[i].changedOption == ANSWER_PATRONYMIC ||
 		    (*reminders)[i].changedOption == ANSWER_SURNAME) {
