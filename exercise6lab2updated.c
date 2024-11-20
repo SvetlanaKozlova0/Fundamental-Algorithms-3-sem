@@ -33,35 +33,35 @@ statusCode oversscanf(const char* string, const char* format, ...);
 statusCode overfscanf(FILE* file, const char* format, ...);
 
 int main() {
-	int firstNumber, secondNumber, thirdNumber;
-	unsigned int fourthNumber;
-	statusCode status = oversscanf("Numbers: XIX a Z % 1010101", "Numbers: %Ro %Cv %CV %% %Zr", &firstNumber,
-	                               &secondNumber, 11, &thirdNumber, 36, &fourthNumber);
+	int firstNumber, thirdNumber, fourthNumber;
+	unsigned int secondNumber;
+	statusCode status = oversscanf("XIX 101 0101 0101", "%Ro %2d %Zr %Zr", &firstNumber, &secondNumber, &thirdNumber, &newNumber);
 	switch (status) {
 		case MEMORY_ALLOCATION_ERROR:
 			printf("Memory allocation error.\n");
 			return 1;
 		case NOT_FOUND:
 			printf("Not found (wrong data).\n");
+			//return 1;
 	}
-	printf("firstNumber = %d, secondNumber = %d, thirdNumber = %d, fourthNumber = %u\n", firstNumber, secondNumber,
-	       thirdNumber, fourthNumber);
-	FILE* file = fopen("input.txt", "r");
-	if (file == NULL) {
-		printf("An error while opening the file.\n");
-		return 1;
-	}
-	status = overfscanf(file, "%Ro %Cv %CV %% %Zr", &firstNumber, &secondNumber, 11, &thirdNumber, 36, &fourthNumber);
-	switch (status) {
-		case MEMORY_ALLOCATION_ERROR:
-			printf("Memory allocation error.\n");
-			return 1;
-		case NOT_FOUND:
-			printf("Not found (wrong data).\n");
-	}
-	printf("firstNumber = %d, secondNumber = %d, thirdNumber = %d, fourthNumber = %u\n", firstNumber, secondNumber,
-	       thirdNumber, fourthNumber);
-	fclose(file);
+
+	printf("firstNumber = %d, secondNumber = %lld, thirdNumber = %d, fourthNumber = %d\n", firstNumber, secondNumber, thirdNumber, fourthNumber);
+//	//	FILE* file = fopen("input.txt", "r");
+//	if (file == NULL) {
+//		printf("An error while opening the file.\n");
+//		return 1;
+//	}
+//	status = overfscanf(file, "%Ro %Cv %CV %% %Zr", &firstNumber, &secondNumber, 11, &thirdNumber, 36, &fourthNumber);
+//	switch (status) {
+//		case MEMORY_ALLOCATION_ERROR:
+//			printf("Memory allocation error.\n");
+//			return 1;
+//		case NOT_FOUND:
+//			printf("Not found (wrong data).\n");
+//	}
+//	printf("firstNumber = %d, secondNumber = %d, thirdNumber = %d, fourthNumber = %u\n", firstNumber, secondNumber,
+//	       thirdNumber, fourthNumber);
+//	fclose(file);
 	return 0;
 }
 
@@ -222,7 +222,7 @@ statusCode oversscanf(const char* string, const char* format, ...) {
 				newFormat[count] = format[i++];
 			}
 			newFormat[count + 1] = '\0';
-			int scanResult = sscanf(currentString, newFormat, arguments);
+			int scanResult = vsscanf(currentString, newFormat, arguments);
 			free(newFormat);
 			if (scanResult != 1) {
 				va_end(arguments);
