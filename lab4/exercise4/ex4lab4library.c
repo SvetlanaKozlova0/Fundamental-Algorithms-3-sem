@@ -301,10 +301,11 @@ statusCode FileReading(const char* fileName, vector** vectors, FILE* output) {
 		if (c == '{') {
 			int countBraces = 1;
 			while (c != EOF && countBraces != 0) {
-				c = getc(output);
+				c = getc(input);
 				if (c == '}') countBraces--;
 				if (c == '{') countBraces++;
 			}
+			if (c == '}') c = getc(input);
 			if (c == EOF) {
 				free(buffer);
 				fclose(input);
@@ -314,6 +315,7 @@ statusCode FileReading(const char* fileName, vector** vectors, FILE* output) {
 		if (c == ';') {
 			buffer[currentLength] = '\0';
 			currentLength = 0;
+			printf("%s\n", buffer);
 			fprintf(output, "%d. ", count++);
 			status = ProcessingString(buffer, vectors, output);
 			if (status == MEMORY_ALLOCATION_ERROR) {

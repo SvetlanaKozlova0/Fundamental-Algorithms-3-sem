@@ -37,6 +37,13 @@ int main(int argc, char** argv) {
 				free(vectors[i]);
 			}
 			return 1;
+		case INCORRECT_BRACES:
+			printf("Incorrect braces in the expression.\n");
+			for (int i = 0; i < LENGTH_ALPHABET; i++) {
+				if (vectors[i] != NULL) free(vectors[i]->values);
+				free(vectors[i]);
+			}
+			return 1;
 	}
 	for (int i = 0; i < LENGTH_ALPHABET; i++) {
 		if (vectors[i] != NULL) free(vectors[i]->values);
