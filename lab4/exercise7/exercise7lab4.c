@@ -21,6 +21,9 @@ int main(int argc, char** argv) {
 		case UNINIT_VALUE:
 			printf("Uninitialized value.\n");
 			return 1;
+		case DIVISION_BY_ZERO:
+			printf("Division by zero.\n");
+			return 1;
 	}
 	return 0;
 }

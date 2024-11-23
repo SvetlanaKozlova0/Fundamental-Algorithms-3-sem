@@ -31,10 +31,11 @@ statusCode FileReading(const char* fileName, MemoryCell** cells);
 type DetectType(const char* line);
 statusCode AssignOperation(MemoryCell** cells, char* line, int* totalAmount, int* currentAmount);
 statusCode PrintOperation(const MemoryCell** cells, char* line, int amountCells);
-statusCode MathOperation(MemoryCell** cells, char* line, int amount);
+statusCode MathOperation(MemoryCell** cells, char* line, int *amount);
 statusCode FindVariable(char* nameVariable, const MemoryCell** cells, MemoryCell** current);
 statusCode GetNameAndValue(const char* line, char** name, int* value);
 statusCode GetTwoNames(const char* line, char** first, char** second);
 int CompareMemoryCells(const void* first, const void* second);
 int FindInCellsArray(MemoryCell** array, int amount, char* key);
+statusCode PrintCurrentCell(MemoryCell** cells, char* line, int amount);
 #endif
