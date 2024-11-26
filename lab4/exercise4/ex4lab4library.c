@@ -298,15 +298,25 @@ statusCode FileReading(const char* fileName, vector** vectors, FILE* output) {
 	statusCode status = NORMAL;
 	int count = 1;
 	while ((c = getc(input)) != EOF) {
+		if (c == '}') {
+			free(buffer);
+			fclose(input);
+			return INCORRECT_BRACES;
+		}
 		if (c == '{') {
 			int countBraces = 1;
 			while (c != EOF && countBraces != 0) {
 				c = getc(input);
-				if (c == '}') countBraces--;
 				if (c == '{') countBraces++;
+				if (c == '}') countBraces--;
 			}
-			if (c == '}') c = getc(input);
-			if (c == EOF) {
+			if (c != EOF && countBraces == 0) {
+				continue;
+			} else if (c == EOF && countBraces == 0) {
+				free(buffer);
+				fclose(input);
+				return NORMAL;
+			} else {
 				free(buffer);
 				fclose(input);
 				return INCORRECT_BRACES;
