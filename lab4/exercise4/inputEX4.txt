@@ -1,0 +1,37 @@
+Read(A, 10); %reading in decimal
+        wrIte(a, 10);
+read(b , 10);
+WRITE(a, 5); %how it will be in 5 system
+        b         :   = \b; %incorrect instruction {because b is empty}
+        c = a &
+{correct instruction {because b is empty and a is not
+		    l := \a ;
+	C := A & B;
+		write(a,10);
+		%a := a +ghfhgf b;
+		write(a, 10);
+	c := a # b; %invalid operation
+		        C :       =     a + b;
+	c := a -> b;
+	d := a <- b;
+	e := a ~ b; {now will be instructions on one string} e := a <> b; t := a +> b; y := a ? b; z := a ! b
+		    ;
+
+
+
+
+		{writing}
+		write(e, 10);
+		write(b, 7);
+		write( b , a) %incorrect system
+		                  write( b , 23);
+		write (z , -134); %incorrect system
+		        write (a , 54);  %incorrect system
+		        write (e , 2);
+		read ( 5 , 4); %incorrect syntax
+		        dosomething ( 342432) ; %incorrect command
+		        end; %incorrect command
+		    %anddddd enndd enddd {fjjflsjdf} jflksjfj {fksjfl {fjslkjfl {}}} %wrong braces}}}
+		    ;
+
+	a := \b  ; %incorrect braces
