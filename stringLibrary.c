@@ -64,6 +64,8 @@ int CompareChars(const char* firstChars, const char* secondChars) {
 		else
 			return -1;
 	}
+	if (StringLength(firstChars) < StringLength(secondChars)) return 1;
+	if (StringLength(firstChars) > StringLength(secondChars)) return -1;
 	return 0;
 }
 
