@@ -83,6 +83,7 @@ class PerishableProduct : public Product {
 	PerishableProduct(const std::string& productName, int id, double productWeight, double productPrice, int shelf,
 	                  int day, int month, int year)
 	    : Product(productName, id, productWeight, productPrice, shelf) {
+		std::time_t currentTime = std::time(nullptr);
 		std::tm exp = {};
 		if (year < 1900) year = 1900;
 		exp.tm_year = year - 1900;
@@ -95,6 +96,9 @@ class PerishableProduct : public Product {
 		exp.tm_sec = 0;
 		exp.tm_isdst = -1;
 		expirationDate = std::mktime(&exp);
+		if (expirationDate > currentTime) {
+			expirationDate = currentTime;
+		}
 	}
 	PerishableProduct() : Product() { expirationDate = {}; }
 	double calculateStorageFee(double newPrice) override {
