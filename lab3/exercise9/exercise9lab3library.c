@@ -1,7 +1,9 @@
 #include "exercise9lab3library.h"
-#include "../../stringLibrary.h"
-#include <stdlib.h>
+
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "../../stringLibrary.h"
 
 status_code create_tree_node(tree_node** current, char* word) {
 	if (*current != NULL) return NOT_EMPTY;
@@ -54,7 +56,8 @@ status_code add_search_tree(search_tree** tree, char* word) {
 		}
 		if (CompareChars((*current_node)->word, word) == 1) {
 			current_node = &(*current_node)->left;
-		} else current_node = &(*current_node)->right;
+		} else
+			current_node = &(*current_node)->right;
 	}
 	status = create_tree_node(current_node, word);
 	if (status != NORMAL) return status;
@@ -68,11 +71,11 @@ int find_search_tree(search_tree* tree, char* word) {
 	while (current != NULL) {
 		result_comparing = CompareChars(word, current->word);
 		if (result_comparing == 0) return current->freq;
-		if (result_comparing == 1) {
-			current = current->right;
-		}
 		if (result_comparing == -1) {
 			current = current->left;
+		}
+		if (result_comparing == 1) {
+			current = current->right;
 		}
 	}
 	return 0;
@@ -95,16 +98,17 @@ void destroy_search_tree(search_tree** tree) {
 status_code get_arguments(int argc, char** argv, char** filename, char** separators) {
 	if (argc < 3) return WRONG_NUMBER_ARGUMENTS;
 	*filename = argv[1];
-	*separators = (char*)malloc(sizeof(char) * (argc - 1));
+	*separators = (char*)malloc(sizeof(char) * (argc));
 	if (*separators == NULL) {
 		return MEMORY_ALLOCATION_ERROR;
 	}
+	int index = 0;
 	for (int i = 2; i < argc; i++) {
 		if (StringLength(argv[i]) != 1) {
 			free(*separators);
 			return INCORRECT_SEPARATORS;
 		}
-		(*separators)[i] = argv[i][0];
+		(*separators)[index++] = argv[i][0];
 	}
 	(*separators)[argc - 2] = '\0';
 	return NORMAL;
@@ -112,7 +116,7 @@ status_code get_arguments(int argc, char** argv, char** filename, char** separat
 
 int is_separator(int current_char, char* separators) {
 	for (int i = 0; i < StringLength(separators); i++) {
-		if (separators[i] == current_char) return 1;
+		if (separators[i] == (char)current_char) return 1;
 	}
 	return 0;
 }
@@ -138,9 +142,8 @@ status_code file_reading(const char* file_name, char* separators, search_tree** 
 	int currentLength = 0;
 	int totalLength = START_BUFFER_SIZE;
 	while ((c = getc(input)) != EOF) {
-		if (is_separator(c, separators)) {
+		if (is_separator(c, separators) || c == ' ' || c == '\t' || c == '\n' || c == '\r') {
 			buffer[currentLength] = '\0';
-			if (StringLength(buffer) == 0) printf("empty string: ");
 			if (StringLength(buffer) != 0) {
 				status = add_search_tree(tree, buffer);
 				if (status != NORMAL) {
@@ -149,7 +152,6 @@ status_code file_reading(const char* file_name, char* separators, search_tree** 
 					return status;
 				}
 			}
-			printf("%s\n", buffer);
 			currentLength = 0;
 		} else {
 			if (currentLength + 1 >= totalLength) {
@@ -167,7 +169,14 @@ status_code file_reading(const char* file_name, char* separators, search_tree** 
 	}
 	if (currentLength > 0) {
 		buffer[currentLength] = '\0';
-		printf("%s\n", buffer);
+		if (StringLength(buffer) != 0) {
+			status = add_search_tree(tree, buffer);
+			if (status != NORMAL) {
+				fclose(input);
+				destroy_search_tree(tree);
+				return status;
+			}
+		}
 	}
 	free(buffer);
 	fclose(input);
@@ -264,9 +273,6 @@ status_code join_node_to_tree(tree_node** tree, const char* word, int freq) {
 
 status_code get_word_and_freq(const char* string, char** result, int* freq) {
 	if (string == NULL) return EMPTY;
-	if (*result != NULL) {
-		return NOT_EMPTY;
-	}
 	*result = (char*)malloc(sizeof(char) * START_LENGTH_STRING);
 	if (*result == NULL) return MEMORY_ALLOCATION_ERROR;
 	int current_length = 0;
@@ -299,6 +305,7 @@ status_code read_tree_from_file(char* file_name, search_tree** tree) {
 	if (input == NULL) {
 		return FILE_OPEN_ERROR;
 	}
+	if (*tree != NULL) return NOT_EMPTY;
 	*tree = (search_tree*)malloc(sizeof(search_tree));
 	if (*tree == NULL) {
 		fclose(input);
@@ -313,7 +320,7 @@ status_code read_tree_from_file(char* file_name, search_tree** tree) {
 	}
 	char* current_word = NULL;
 	int current_freq = 0;
-	int currentLength= 0;
+	int currentLength = 0;
 	status_code status = NORMAL;
 	int totalLength = START_BUFFER_SIZE;
 	while ((c = getc(input)) != EOF) {
@@ -410,4 +417,265 @@ status_code print_freq_words(search_tree* tree, int amount) {
 	}
 	free(array);
 	return NORMAL;
+}
+
+status_code get_string_console(char** string) {
+	*string = (char*)malloc(sizeof(char) * START_LENGTH_STRING);
+	if (*string == NULL) return MEMORY_ALLOCATION_ERROR;
+	int c = getc(stdin);
+	int total_length = START_LENGTH_STRING;
+	int current_length = 0;
+	while (c == ' ' || c == '\t') c = getc(stdin);
+	while (c != '\n') {
+		if (current_length + 1 >= total_length) {
+			total_length *= 2;
+			char* temp = (char*)realloc(*string, sizeof(char) * total_length);
+			if (temp == NULL) {
+				free(*string);
+				return MEMORY_ALLOCATION_ERROR;
+			}
+			*string = temp;
+		}
+		(*string)[current_length++] = (char)c;
+		c = getc(stdin);
+	}
+	(*string)[current_length] = '\0';
+	return NORMAL;
+}
+
+type_operation recognize_operation(char* string) {
+	if (string == NULL) return TYPE_UNKNOWN;
+
+	if (StringLength(string) == 4 && CompareCharsOpt(string, "find") == 0) return TYPE_FIND;
+	if (StringLength(string) == 4 && CompareChars(string, "most") == 0) return TYPE_FIND_MAX;
+	if (StringLength(string) == 5 && CompareChars(string, "least") == 0) return TYPE_FIND_MIN;
+	if (StringLength(string) == 5 && CompareChars(string, "depth") == 0) return TYPE_GET_DEPTH;
+	if (StringLength(string) == 4 && CompareChars(string, "load") == 0) return TYPE_LOAD_TO_FILE;
+	if (StringLength(string) == 7 && CompareChars(string, "recover") == 0) return TYPE_RELOAD_FROM_FILE;
+	if (StringLength(string) == 5 && CompareChars(string, "check") == 0) return TYPE_MOST_FREQUENT;
+	if (StringLength(string) == 3 && CompareChars(string, "end") == 0) return TYPE_END;
+	return TYPE_UNKNOWN;
+}
+
+void get_menu() {
+	printf("----------------MENU----------------\n");
+	printf("find frequency of word          find\n");
+	printf("find most frequent              most\n");
+	printf("find least frequent            least\n");
+	printf("get depth                      depth\n");
+	printf("load tree to file               load\n");
+	printf("recover tree from file       recover\n");
+	printf("Watch N most frequents words   check\n");
+	printf("end                              end\n");
+	printf("------------------------------------\n");
+}
+
+
+status_code interactive_dialogue(search_tree** tree, int count) {
+	type_operation current_operation = TYPE_UNKNOWN;
+	char* string = NULL;
+	status_code status = NORMAL;
+	int freq = 0;
+	get_menu();
+	while (current_operation != TYPE_END) {
+		status = get_string_console(&string);
+		if (status != NORMAL) {
+			return status;
+		}
+		current_operation = recognize_operation(string);
+		switch (current_operation) {
+			case TYPE_END:
+				free(string);
+				return NORMAL;
+			case TYPE_UNKNOWN:
+				get_menu();
+				free(string);
+				break;
+			case TYPE_GET_DEPTH:
+				printf("------------Operation DEPTH---------\n");
+				printf("Determine the length of the search tree.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				printf("Depth of search tree: %d\n", tree_depth((*tree)->head));
+				printf("------------------------------------\n");
+				free(string);
+				break;
+			case TYPE_FIND:
+				printf("------------Operation FIND----------\n");
+				printf("Find out how many times the search word was found in the file.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				printf("Please, enter the word: ");
+				free(string);
+				status = get_string_console(&string);
+				if (status != NORMAL) return status;
+				freq = find_search_tree(*tree, string);
+				printf("Your word: %s\n", string);
+				if (freq <= 0)
+					printf("File doesn't contain this word. Frequency = 0.\n");
+				else
+					printf("Frequency = %d\n", freq);
+				printf("------------------------------------\n");
+				free(string);
+				break;
+			case TYPE_FIND_MIN:
+				printf("----------Operation LEAST-----------\n");
+				printf("Find the word that is least common in the file.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				free(string);
+				freq = count + 1;
+				char* current = NULL;
+				get_min_word((*tree)->head, &freq, &current);
+				if (string != NULL) {
+					printf("Word: %s\n", current);
+					printf("Frequency: %d\n", freq);
+				} else
+					printf("Not found.\n");
+				printf("------------------------------------\n");
+				break;
+			case TYPE_FIND_MAX:
+				printf("-----------Operation MOST-----------\n");
+				printf("Finds the word that is most often found in the file.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				free(string);
+				freq = 0;
+				char* current2 = NULL;
+				get_max_word((*tree)->head, &freq, &current2);
+				if (freq != 0) {
+					printf("Word: %s\n", current2);
+					free(string);
+					string = NULL;
+					printf("Frequency: %d\n", freq);
+				} else
+					printf("Not found.\n");
+				printf("------------------------------------\n");
+				break;
+			case TYPE_MOST_FREQUENT:
+				printf("----------Operation CHECK-----------\n");
+				printf("Finds the N most common words in the file.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				printf("Please, enter the amount of words you want to find: ");
+				free(string);
+				status = get_string_console(&string);
+				if (status != NORMAL) return status;
+				int flag = 1;
+				for (int i = 0; i < StringLength(string); i++) {
+					if (!IsDigit(string[i])) {
+						flag = 0;
+						break;
+					}
+				}
+				if (flag != 1) {
+					free(string);
+					printf("Incorrect, number must contain only digits.\n");
+					printf("------------------------------------\n");
+					break;
+				}
+				int amount = 0;
+				ssize_t result_scan = sscanf(string, "%d", &amount);
+				if (result_scan == -1) {
+					free(string);
+					printf("An error while scanning number.\n");
+					printf("------------------------------------\n");
+					break;
+				}
+				free(string);
+				status = print_freq_words(*tree, amount);
+				if (status != NORMAL) return status;
+				printf("------------------------------------\n");
+				break;
+			case TYPE_LOAD_TO_FILE:
+				printf("----------Operation LOAD------------\n");
+				printf("Uploads the tree to a file.\n");
+				if (tree == NULL || *tree == NULL) {
+					printf("Now search tree is empty (you have uploaded it to a file or\n"
+					    "the file in which the words are searched is empty.\n");
+					printf("Please download the tree back or start the program again.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				free(string);
+				printf("Please enter the name of the file you want to upload the tree to:\n");
+				status = get_string_console(&string);
+				if (status != NORMAL) return status;
+				status = load_tree_in_file(string, *tree);
+				if (status != NORMAL) {
+					free(string);
+					return status;
+				}
+				free(string);
+				destroy_search_tree(tree);
+				*tree = NULL;
+				printf("Everything was uploaded successfully. The search tree has been deleted.\n"
+				    "To restore the tree, use the recover function.\n");
+				printf("------------------------------------\n");
+				break;
+			case TYPE_RELOAD_FROM_FILE:
+				printf("--------Operation RECOVER-----------\n");
+				printf("Restore a tree from a file.\n");
+				if (*tree != NULL) {
+					printf("The current tree is not empty.\n"
+					    "This means that it has not been deleted.\n"
+					    "The operation cannot be performed with a non-empty tree.\n"
+					    "Please first load the tree into a file using the load function.\n");
+					printf("------------------------------------\n");
+					free(string);
+					break;
+				}
+				free(string);
+				printf("Please enter the name of the file you want to restore the tree from:\n");
+				status = get_string_console(&string);
+				if (status != NORMAL) return status;
+				status = read_tree_from_file(string, tree);
+				if (status != NORMAL) {
+					free(string);
+					return status;
+				}
+				free(string);
+				printf("Everything was recovered successfully.\n");
+				printf("------------------------------------\n");
+				break;
+		}
+	}
+}
+
+void amount_elements_search_tree(tree_node* tree, int* amount) {
+	if (tree == NULL) return;
+	(*amount)++;
+	amount_elements_search_tree(tree->right, amount);
+	amount_elements_search_tree(tree->left, amount);
 }
