@@ -17,7 +17,10 @@ typedef enum status_code {
 	INCORRECT_SEPARATORS,
 	FILE_OPEN_ERROR,
 	EMPTY,
-	INVALID_BORDER
+	INVALID_BORDER,
+	INCORRECT_FILE_NAME,
+	INCORRECT_STRING,
+	INCORRECT_FILE
 } status_code;
 
 typedef struct search_tree{
@@ -69,5 +72,6 @@ status_code get_word_and_freq(const char* string, char** result, int* freq);
 void fill_array(tree_node* head, tree_node*** array, int* amount);
 status_code print_freq_words(search_tree* tree, int amount);
 status_code interactive_dialogue(search_tree** tree, int amount);
-
+status_code is_correct_file(const char* file);
+int is_correct_file_name(const char* file_name) ;
 #endif
