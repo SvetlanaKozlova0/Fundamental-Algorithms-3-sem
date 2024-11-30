@@ -335,7 +335,6 @@ status_code read_tree_from_file(char* file_name, search_tree** tree) {
 				destroy_search_tree(tree);
 				return status;
 			}
-			printf("%s %d \n", current_word, current_freq);
 			status = join_node_to_tree(&(*tree)->head, current_word, current_freq);
 			if (status != NORMAL) {
 				free(buffer);
@@ -465,11 +464,98 @@ void get_menu() {
 	printf("get depth                      depth\n");
 	printf("load tree to file               load\n");
 	printf("recover tree from file       recover\n");
-	printf("Watch N most frequents words   check\n");
+	printf("watch N most frequents words   check\n");
 	printf("end                              end\n");
 	printf("------------------------------------\n");
 }
 
+int is_correct_file_name(const char* file_name) {
+	int index = 0;
+	int flag = 0;
+	while (file_name[index] == ' ' || file_name[index] == '\t') index++;
+	while (IsDigit(file_name[index]) || IsAlpha(file_name[index]) || file_name[index] == '_') {
+		index++;
+		flag = 1;
+	}
+	if (file_name[index] != '.') return INCORRECT_FILE_NAME;
+	index++;
+	const char* extension = "txt";
+	for (int i = 0; i < 3; i++) {
+		if (file_name[index++] != extension[i]) return INCORRECT_FILE_NAME;
+	}
+	if (file_name[index] != '\0') return INCORRECT_FILE_NAME;
+	return NORMAL;
+}
+
+status_code check_string(const char* string) {
+	int index = 0;
+	while (string[index] == ' ' || string[index] == '\t') index++;
+	int flag_word = 0;
+	int flag_number = 0;
+	while (IsAlpha(string[index])) {
+		flag_word = 1;
+		index++;
+	}
+	while (string[index] == ' ' || string[index] == '\t') index++;
+	while (IsDigit(string[index])) {
+		index++;
+		flag_number = 1;
+	}
+	while (string[index] == ' ' || string[index] == '\t') index++;
+	if (string[index] != '\0') return INCORRECT_STRING;
+	if (flag_number && flag_word) return NORMAL;
+	return INCORRECT_STRING;
+ }
+
+status_code is_correct_file(const char* file) {
+	FILE* input = fopen(file, "r");
+	if (input == NULL) {
+		return FILE_OPEN_ERROR;
+	}
+	char* buffer = (char*)malloc(sizeof(char) * START_BUFFER_SIZE);
+	if (buffer == NULL) {
+		fclose(input);
+		return MEMORY_ALLOCATION_ERROR;
+	}
+	int c = '0';
+	int current_length = 0;
+	int total_length = START_BUFFER_SIZE;
+	while ((c = getc(input)) != EOF) {
+		if (c == '\n') {
+			buffer[current_length] = '\0';
+			current_length = 0;
+			if (check_string(buffer) != NORMAL) {
+				free(buffer);
+				fclose(input);
+				return INCORRECT_FILE;
+			}
+		}
+		else {
+			if (current_length + 1 >= total_length) {
+				total_length *= 2;
+				char* temp = (char*)realloc(buffer, sizeof(char) * total_length);
+				if (temp == NULL) {
+					free(buffer);
+					fclose(input);
+					return MEMORY_ALLOCATION_ERROR;
+				}
+				buffer = temp;
+			}
+			buffer[current_length++] = (char)c;
+		}
+	}
+	if (current_length > 0) {
+		buffer[current_length] = '\0';
+		if (check_string(buffer) != NORMAL) {
+			free(buffer);
+			fclose(input);
+			return INCORRECT_FILE;
+		}
+	}
+	free(buffer);
+	fclose(input);
+	return NORMAL;
+}
 
 status_code interactive_dialogue(search_tree** tree, int count) {
 	type_operation current_operation = TYPE_UNKNOWN;
@@ -569,8 +655,6 @@ status_code interactive_dialogue(search_tree** tree, int count) {
 				get_max_word((*tree)->head, &freq, &current2);
 				if (freq != 0) {
 					printf("Word: %s\n", current2);
-					free(string);
-					string = NULL;
 					printf("Frequency: %d\n", freq);
 				} else
 					printf("Not found.\n");
@@ -632,6 +716,12 @@ status_code interactive_dialogue(search_tree** tree, int count) {
 				printf("Please enter the name of the file you want to upload the tree to:\n");
 				status = get_string_console(&string);
 				if (status != NORMAL) return status;
+				if (is_correct_file_name(string) != NORMAL) {
+					free(string);
+					printf("Incorrect file name.\n");
+					printf("------------------------------------\n");
+					break;
+				}
 				status = load_tree_in_file(string, *tree);
 				if (status != NORMAL) {
 					free(string);
@@ -660,6 +750,17 @@ status_code interactive_dialogue(search_tree** tree, int count) {
 				printf("Please enter the name of the file you want to restore the tree from:\n");
 				status = get_string_console(&string);
 				if (status != NORMAL) return status;
+				if (is_correct_file_name(string) != NORMAL) {
+					free(string);
+					printf("Incorrect file name.\n");
+					printf("------------------------------------\n");
+					break;
+				}
+				if (is_correct_file(string) != NORMAL) {
+					printf("File has incorrect format. Operation stopped.\n");
+					free(string);
+					break;
+				}
 				status = read_tree_from_file(string, tree);
 				if (status != NORMAL) {
 					free(string);
