@@ -51,10 +51,19 @@ int main(int argc, char** argv) {
 			destroy_search_tree(&tree);
 			return 1;
 	}
+	if (is_correct_file_name(output_file_name) != NORMAL) {
+		destroy_search_tree(&tree);
+		free(separators);
+		free(output_file_name);
+		printf("Incorrect file name.\n");
+		printf("------------------------------------\n");
+		return 1;
+	}
 	FILE* output = fopen(output_file_name, "w");
 	if (output == NULL) {
 		destroy_search_tree(&tree);
 		free(separators);
+		free(output_file_name);
 		printf("An error while opening output.txt.\n");
 		return 1;
 	}
